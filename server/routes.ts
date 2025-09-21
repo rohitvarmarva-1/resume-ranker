@@ -17,6 +17,7 @@ import {
   generateTestQuestions, 
   evaluateTestAnswers 
 } from "./openai";
+import { emailService } from "./email";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
@@ -39,6 +40,9 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize email service
+  await emailService.initialize();
+  
   setupAuth(app);
 
   // Job routes
@@ -193,6 +197,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const updatedApplication = await storage.getApplication(application.id);
+      
+      // Send email notifications
+      try {
+        const candidate = req.user;
+        const recruiter = await storage.getUser(job.recruiterId);
+        
+        // Notify candidate that application was received
+        await emailService.notifyApplicationReceived(
+          candidate, 
+          job, 
+          recruiter.username
+        );
+        
+        // Notify recruiter of new application
+        await emailService.notifyRecruiterNewApplication(
+          recruiter, 
+          candidate, 
+          job, 
+          updatedApplication
+        );
+        
+        // If test was generated, notify candidate of test invitation
+        if (updatedApplication.status === "test_invited") {
+          const tests = await storage.getTestsByCandidate(candidate.id);
+          const applicationTest = tests.find(test => test.applicationId === application.id);
+          if (applicationTest) {
+            await emailService.notifyTestInvitation(
+              candidate,
+              job,
+              applicationTest,
+              recruiter.username
+            );
+          }
+        }
+      } catch (emailError) {
+        console.error("Failed to send email notifications:", emailError);
+        // Don't fail the request if email fails
+      }
+      
       res.status(201).json(updatedApplication);
     } catch (error) {
       res.status(400).json({ error: "Invalid application data" });
@@ -297,6 +340,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update application status
       await storage.updateApplication(test.applicationId, { status: "in_review" });
+      
+      // Send status update notification
+      try {
+        const application = await storage.getApplication(test.applicationId);
+        const job = await storage.getJob(test.jobId);
+        const candidate = req.user;
+        const recruiter = await storage.getUser(job.recruiterId);
+        
+        // Notify candidate that test was completed and application is in review
+        await emailService.notifyStatusUpdate(
+          candidate,
+          job,
+          "in_review",
+          recruiter.username
+        );
+      } catch (emailError) {
+        console.error("Failed to send status update email:", emailError);
+        // Don't fail the request if email fails
+      }
 
       res.json({ ...testResult, feedback: evaluation.feedback });
     } catch (error) {
