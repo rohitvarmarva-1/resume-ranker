@@ -90,6 +90,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
     try {
+      console.log('Starting resume processing for file:', req.file.originalname);
+      
       // In a real implementation, you'd extract text from the PDF/DOC file
       // For now, we'll simulate extracted text
       const simulatedResumeText = `
@@ -98,7 +100,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         Experience in frontend and backend development, agile methodologies, and team collaboration.
       `;
 
+      console.log('Calling extractResumeSkills with OpenAI...');
       const extractedData = await extractResumeSkills(simulatedResumeText);
+      console.log('OpenAI extraction successful:', extractedData);
 
       const resumeData = {
         fileName: req.file.originalname,
@@ -108,9 +112,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         summary: extractedData.summary,
       };
 
+      console.log('Creating resume in storage...');
       const resume = await storage.createResume(resumeData, req.user.id);
+      console.log('Resume created successfully:', resume.id);
+      
       res.status(201).json(resume);
     } catch (error) {
+      console.error('Resume processing error:', error);
+      
       // Clean up uploaded file on error
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);

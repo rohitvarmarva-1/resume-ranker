@@ -48,7 +48,7 @@ export async function calculateJobMatch(
     `;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -96,7 +96,7 @@ export async function extractResumeSkills(resumeText: string): Promise<{
     `;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
@@ -153,7 +153,7 @@ export async function generateTestQuestions(
     `;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-5",
+      model: "gpt-4o-mini",
       messages: [
         {
           role: "system",
