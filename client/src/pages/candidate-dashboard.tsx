@@ -8,11 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
 import ResumeUploadModal from "@/components/resume-upload-modal";
-import { useMutation, queryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CandidateDashboard() {
@@ -26,23 +27,23 @@ export default function CandidateDashboard() {
   
   const { toast } = useToast();
 
-  const { data: stats } = useQuery({
+  const { data: stats = {} } = useQuery<any>({
     queryKey: ["/api/stats/candidate"],
   });
 
-  const { data: applications = [] } = useQuery({
+  const { data: applications = [] } = useQuery<any[]>({
     queryKey: ["/api/applications"],
   });
 
-  const { data: tests = [] } = useQuery({
+  const { data: tests = [] } = useQuery<any[]>({
     queryKey: ["/api/tests"],
   });
 
-  const { data: jobs = [] } = useQuery({
+  const { data: jobs = [] } = useQuery<any[]>({
     queryKey: ["/api/jobs"],
   });
 
-  const { data: resumes = [] } = useQuery({
+  const { data: resumes = [] } = useQuery<any[]>({
     queryKey: ["/api/resumes"],
   });
 
