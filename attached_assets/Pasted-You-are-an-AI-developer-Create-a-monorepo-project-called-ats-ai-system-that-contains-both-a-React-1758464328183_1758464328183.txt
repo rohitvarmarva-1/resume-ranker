@@ -1,0 +1,56 @@
+You are an AI developer. Create a monorepo project called `ats-ai-system` that contains both a React frontend and an Express.js backend. Use MongoDB Atlas as the database, and prepare placeholders for AI-powered job matching and question generation.
+
+📂 Project Structure:
+ats-ai-system/
+│── frontend/ (React app)
+│   ├── public/
+│   └── src/
+│       ├── components/ (Navbar, Button, etc.)
+│       ├── pages/ (Login, Dashboard, JobPost, Test)
+│       ├── services/ (API calls)
+│       ├── App.js
+│       └── index.js
+│   └── package.json
+│
+│── backend/ (Express.js app)
+│   ├── routes/
+│   │   ├── auth.js → signup/login endpoints
+│   │   ├── jobs.js → post & get jobs
+│   │   ├── match.js → AI job matching placeholder
+│   │   ├── test.js → AI test generation placeholder
+│   │   └── notify.js → email notifications placeholder
+│   ├── models/
+│   │   ├── User.js (recruiter/candidate schema)
+│   │   ├── Job.js
+│   │   ├── Resume.js
+│   │   └── TestResult.js
+│   ├── utils/
+│   │   ├── ai_match.js (placeholder for Pinecone/Weaviate)
+│   │   ├── ai_questions.js (placeholder for Qwen/OpenAI API)
+│   │   └── email.js (Nodemailer config)
+│   ├── app.js → Express app entry point
+│   └── package.json
+│
+│── config/
+│   ├── db.js → MongoDB connection
+│   └── email.json → email service config
+│
+│── .env (MONGO_URI, API_KEYS, EMAIL_USER, EMAIL_PASS)
+│── README.md
+
+⚙️ Dependencies:
+Frontend: react, react-router-dom, axios
+Backend: express, mongoose, cors, nodemailer, axios
+
+🎯 Features to Implement:
+1. Role-based auth → Recruiters & Candidates
+2. Recruiters can post jobs
+3. Candidates can upload resumes
+4. Backend extracts skills (basic regex placeholder)
+5. Job matching → store vectors in array now (later Pinecone/Weaviate)
+6. AI test generation → placeholder API returning dummy questions
+7. Email notification → Nodemailer placeholder
+8. Results dashboard for recruiters
+
+🚀 MVP Flow:
+Recruiter posts job → candidate applies → backend "matches" resume → dummy test generated → test submitted → recruiter sees result.
