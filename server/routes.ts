@@ -305,6 +305,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Dashboard stats routes
+  // Get detailed application results for recruiter (includes test results)
+  app.get("/api/applications/:id/details", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    if (req.user?.role !== "recruiter") return res.sendStatus(403);
+
+    try {
+      const application = await storage.getApplication(req.params.id);
+      if (!application) return res.sendStatus(404);
+
+      // Verify recruiter owns this application's job
+      const job = await storage.getJob(application.jobId);
+      if (!job || job.recruiterId !== req.user.id) return res.sendStatus(403);
+
+      // Get enriched data
+      const candidate = await storage.getUser(application.candidateId);
+      const resume = await storage.getResume(application.resumeId);
+      
+      // Get test data if exists
+      const tests = await storage.getTestsByCandidate(application.candidateId);
+      const applicationTest = tests.find(test => test.applicationId === application.id);
+      let testResult = null;
+      
+      if (applicationTest) {
+        testResult = await storage.getTestResult(applicationTest.id);
+      }
+
+      res.json({
+        ...application,
+        job,
+        candidate,
+        resume,
+        test: applicationTest,
+        testResult,
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch application details" });
+    }
+  });
+
   app.get("/api/stats/recruiter", async (req, res) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
     if (req.user?.role !== "recruiter") return res.sendStatus(403);
