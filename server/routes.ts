@@ -15,7 +15,8 @@ import {
   calculateJobMatch, 
   extractResumeSkills, 
   generateTestQuestions, 
-  evaluateTestAnswers 
+  evaluateTestAnswers,
+  checkHighMatchCandidates
 } from "./openai";
 import { emailService } from "./email";
 import multer from "multer";
@@ -53,6 +54,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const jobData = insertJobSchema.parse(req.body);
       const job = await storage.createJob(jobData, req.user.id);
+      
+      // Check for high-match candidates and send notifications
+      if (job.aiMatchingEnabled) {
+        try {
+          console.log(`🚀 New job posted: ${job.title}. Checking for high-match candidates...`);
+          const matchResult = await checkHighMatchCandidates(job, storage, emailService);
+          console.log(`✅ High-match check completed. Notified ${matchResult.notifiedCandidates} candidates`);
+        } catch (matchError) {
+          console.error("Failed to check high-match candidates:", matchError);
+          // Don't fail the job creation if matching check fails
+        }
+      }
+      
       res.status(201).json(job);
     } catch (error) {
       res.status(400).json({ error: "Invalid job data" });

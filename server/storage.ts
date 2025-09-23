@@ -35,6 +35,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getAllCandidates(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
   
   // Job methods
@@ -102,6 +103,12 @@ export class MemStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
       (user) => user.email === email,
+    );
+  }
+
+  async getAllCandidates(): Promise<User[]> {
+    return Array.from(this.users.values()).filter(
+      (user) => user.role === "candidate",
     );
   }
 
@@ -323,6 +330,16 @@ export class DrizzleStorage implements IStorage {
     } catch (error) {
       console.error('Error getting user by email:', error);
       throw new Error('Failed to retrieve user');
+    }
+  }
+
+  async getAllCandidates(): Promise<User[]> {
+    try {
+      const result = await this.db.select().from(users).where(eq(users.role, 'candidate'));
+      return result;
+    } catch (error) {
+      console.error('Error getting all candidates:', error);
+      throw new Error('Failed to retrieve candidates');
     }
   }
 

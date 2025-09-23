@@ -219,3 +219,81 @@ export async function evaluateTestAnswers(
     throw new Error("Failed to evaluate test answers: " + (error as Error).message);
   }
 }
+
+export async function checkHighMatchCandidates(
+  job: any,
+  storage: any,
+  emailService: any
+): Promise<{ notifiedCandidates: number; highMatches: Array<{ candidate: any; matchScore: number }> }> {
+  try {
+    console.log(`🔍 Checking for high-match candidates for job: ${job.title}`);
+    
+    // Get all candidates
+    const candidates = await storage.getAllCandidates();
+    console.log(`📊 Found ${candidates.length} candidates to check`);
+    
+    const highMatches: Array<{ candidate: any; matchScore: number }> = [];
+    let notifiedCandidates = 0;
+
+    // Check each candidate
+    for (const candidate of candidates) {
+      try {
+        // Get candidate's resumes
+        const resumes = await storage.getResumesByCandidate(candidate.id);
+        
+        if (resumes.length === 0) {
+          console.log(`⚠️  Candidate ${candidate.username} has no resumes, skipping`);
+          continue;
+        }
+
+        // Use the most recent resume (or best one)
+        const latestResume = resumes[resumes.length - 1];
+        
+        // Calculate job match
+        const matchResult = await calculateJobMatch(
+          latestResume.summary || "",
+          job.description,
+          job.requiredSkills
+        );
+
+        console.log(`📈 ${candidate.username}: ${matchResult.matchScore}% match`);
+
+        // If match is 85% or higher, notify the candidate
+        if (matchResult.matchScore >= 85) {
+          highMatches.push({ candidate, matchScore: matchResult.matchScore });
+          
+          try {
+            // Get recruiter info for the email
+            const recruiter = await storage.getUser(job.recruiterId);
+            const recruiterName = recruiter?.username || "Company";
+            
+            // Send notification email
+            await emailService.notifyHighMatchJob(
+              candidate,
+              job,
+              matchResult.matchScore,
+              recruiterName
+            );
+            
+            notifiedCandidates++;
+            console.log(`📧 Notified ${candidate.username} about high-match job (${matchResult.matchScore}% match)`);
+            
+          } catch (emailError) {
+            console.error(`Failed to send email to ${candidate.username}:`, emailError);
+            // Continue with other candidates even if one email fails
+          }
+        }
+      } catch (candidateError) {
+        console.error(`Error processing candidate ${candidate.username}:`, candidateError);
+        // Continue with other candidates
+      }
+    }
+
+    console.log(`✅ Completed job matching check. Notified ${notifiedCandidates} candidates with ${highMatches.length} high matches.`);
+    
+    return { notifiedCandidates, highMatches };
+  } catch (error) {
+    console.error("Failed to check high match candidates:", error);
+    throw new Error("Failed to check high match candidates: " + (error as Error).message);
+  }
+}

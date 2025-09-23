@@ -105,6 +105,45 @@ const EMAIL_TEMPLATES = {
       </div>
     `,
   }),
+
+  highMatchJobAlert: (candidate: User, job: Job, matchScore: number, recruiterName: string) => ({
+    subject: `Perfect Job Match Alert: ${job.title} (${matchScore}% Match!)`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #16a34a;">🎯 Perfect Job Match Found!</h2>
+        <p>Dear ${candidate.username},</p>
+        <p>Great news! We found a job that's a <strong style="color: #16a34a;">${matchScore}% match</strong> for your profile!</p>
+        
+        <div style="background-color: #f0fdf4; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #16a34a;">
+          <h3 style="margin-top: 0; color: #16a34a;">Job Details:</h3>
+          <p><strong>Position:</strong> ${job.title}</p>
+          <p><strong>Company:</strong> ${recruiterName}</p>
+          <p><strong>Experience Level:</strong> ${job.experienceLevel}</p>
+          <p><strong>Location:</strong> ${job.location}</p>
+          <p><strong>AI Match Score:</strong> <span style="color: #16a34a; font-weight: bold;">${matchScore}%</span></p>
+        </div>
+        
+        <div style="background-color: #fef3c7; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #f59e0b;">
+          <p style="margin: 0; color: #92400e;"><strong>Why this is a great match:</strong></p>
+          <p style="margin: 5px 0 0 0; color: #92400e;">Your skills and experience align perfectly with this role's requirements!</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <p style="margin-bottom: 15px;">Don't miss this opportunity - apply now!</p>
+          <a href="${process.env.REPL_ID ? `https://${process.env.REPL_ID}.repl.co/candidate-dashboard` : 'http://localhost:5000/candidate-dashboard'}" 
+             style="background-color: #16a34a; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block; margin-right: 10px;">
+            View Job & Apply
+          </a>
+        </div>
+        
+        <p style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+          <strong>Pro Tip:</strong> High-match jobs like this are rare! We recommend applying quickly as these positions often fill fast.
+        </p>
+        
+        <p>Best regards,<br>The ATS AI Team</p>
+      </div>
+    `,
+  }),
 };
 
 function getStatusMessage(status: string): string {
@@ -221,6 +260,11 @@ class EmailService {
   async notifyRecruiterNewApplication(recruiter: User, candidate: User, job: Job, application: Application) {
     const template = EMAIL_TEMPLATES.recruiterNewApplication(recruiter, candidate, job, application);
     await this.sendEmail(recruiter.email, template);
+  }
+
+  async notifyHighMatchJob(candidate: User, job: Job, matchScore: number, recruiterName: string) {
+    const template = EMAIL_TEMPLATES.highMatchJobAlert(candidate, job, matchScore, recruiterName);
+    await this.sendEmail(candidate.email, template);
   }
 }
 
