@@ -569,7 +569,9 @@ export class DrizzleStorage implements IStorage {
   }
 }
 
-// Use PostgreSQL storage for production
-export const storage = process.env.NODE_ENV === 'development' 
-  ? new DrizzleStorage() 
+import { MongoStorage } from "./mongo-storage";
+
+// Use MongoDB if MONGODB_URI is set, otherwise use PostgreSQL/Drizzle
+export const storage = process.env.MONGODB_URI
+  ? new MongoStorage()
   : new DrizzleStorage();

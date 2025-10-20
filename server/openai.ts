@@ -224,15 +224,15 @@ export async function checkHighMatchCandidates(
   job: any,
   storage: any,
   emailService: any
-): Promise<{ notifiedCandidates: number; highMatches: Array<{ candidate: any; matchScore: number }> }> {
+): Promise<{ notifiedCandidates: number; allMatches: Array<{ candidate: any; matchScore: number }> }> {
   try {
-    console.log(`🔍 Checking for high-match candidates for job: ${job.title}`);
+    console.log(`🔍 Checking ALL candidates for new job: ${job.title}`);
     
     // Get all candidates
     const candidates = await storage.getAllCandidates();
-    console.log(`📊 Found ${candidates.length} candidates to check`);
+    console.log(`📊 Found ${candidates.length} candidates to notify`);
     
-    const highMatches: Array<{ candidate: any; matchScore: number }> = [];
+    const allMatches: Array<{ candidate: any; matchScore: number }> = [];
     let notifiedCandidates = 0;
 
     // Check each candidate
@@ -258,30 +258,28 @@ export async function checkHighMatchCandidates(
 
         console.log(`📈 ${candidate.username}: ${matchResult.matchScore}% match`);
 
-        // If match is 85% or higher, notify the candidate
-        if (matchResult.matchScore >= 85) {
-          highMatches.push({ candidate, matchScore: matchResult.matchScore });
+        // Send notification to ALL candidates with their match score
+        allMatches.push({ candidate, matchScore: matchResult.matchScore });
+        
+        try {
+          // Get recruiter info for the email
+          const recruiter = await storage.getUser(job.recruiterId);
+          const recruiterName = recruiter?.username || "Company";
           
-          try {
-            // Get recruiter info for the email
-            const recruiter = await storage.getUser(job.recruiterId);
-            const recruiterName = recruiter?.username || "Company";
-            
-            // Send notification email
-            await emailService.notifyHighMatchJob(
-              candidate,
-              job,
-              matchResult.matchScore,
-              recruiterName
-            );
-            
-            notifiedCandidates++;
-            console.log(`📧 Notified ${candidate.username} about high-match job (${matchResult.matchScore}% match)`);
-            
-          } catch (emailError) {
-            console.error(`Failed to send email to ${candidate.username}:`, emailError);
-            // Continue with other candidates even if one email fails
-          }
+          // Send notification email to ALL candidates
+          await emailService.notifyHighMatchJob(
+            candidate,
+            job,
+            matchResult.matchScore,
+            recruiterName
+          );
+          
+          notifiedCandidates++;
+          console.log(`📧 Notified ${candidate.username} about new job (${matchResult.matchScore}% match)`);
+          
+        } catch (emailError) {
+          console.error(`Failed to send email to ${candidate.username}:`, emailError);
+          // Continue with other candidates even if one email fails
         }
       } catch (candidateError) {
         console.error(`Error processing candidate ${candidate.username}:`, candidateError);
@@ -289,11 +287,11 @@ export async function checkHighMatchCandidates(
       }
     }
 
-    console.log(`✅ Completed job matching check. Notified ${notifiedCandidates} candidates with ${highMatches.length} high matches.`);
+    console.log(`✅ Completed job matching check. Notified ${notifiedCandidates} candidates with match scores.`);
     
-    return { notifiedCandidates, highMatches };
+    return { notifiedCandidates, allMatches };
   } catch (error) {
-    console.error("Failed to check high match candidates:", error);
-    throw new Error("Failed to check high match candidates: " + (error as Error).message);
+    console.error("Failed to check candidates:", error);
+    throw new Error("Failed to check candidates: " + (error as Error).message);
   }
 }

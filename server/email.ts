@@ -192,19 +192,18 @@ class EmailService {
         console.log("📧 Email service initialized with Ethereal (development mode)");
         console.log(`📧 Preview URLs will be logged to console`);
       } else {
-        // For production, you would configure with real SMTP settings
-        // This is a placeholder - users would need to set their own SMTP
+        // Production SMTP configuration
         this.transporter = nodemailer.createTransport({
           host: process.env.SMTP_HOST || "smtp.gmail.com",
           port: parseInt(process.env.SMTP_PORT || "587"),
           secure: false,
           auth: {
             user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
+            pass: process.env.SMTP_PASSWORD,
           },
         });
         
-        console.log("📧 Email service initialized with custom SMTP");
+        console.log("📧 Email service initialized with production SMTP");
       }
       
       this.initialized = true;
@@ -222,7 +221,7 @@ class EmailService {
 
     try {
       const info = await this.transporter.sendMail({
-        from: '"ATS System" <noreply@ats.com>',
+        from: process.env.SMTP_FROM || '"ATS System" <noreply@ats.com>',
         to,
         subject: template.subject,
         html: template.html,
