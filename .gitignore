@@ -1,6 +1,50 @@
-node_modules
-dist
-.DS_Store
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+dist/
+build/
 server/public
 vite.config.ts.*
+
+# Environment variables (IMPORTANT - never commit these!)
+.env
+.env.local
+.env.production
+
+# Uploads and user data
+uploads/
+*.pdf
+*.doc
+*.docx
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Replit specific
+.replit
+replit.nix
+.cache/
+.upm/
+.config/
+
+# Compressed files
 *.tar.gz
+*.zip
+
+# Temporary files
+tmp/
+temp/
