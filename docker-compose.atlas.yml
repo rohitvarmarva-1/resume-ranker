@@ -1,0 +1,33 @@
+version: '3.8'
+
+# Docker Compose configuration for MongoDB Atlas deployment
+# This configuration uses MongoDB Atlas instead of a local MongoDB instance
+
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      # MongoDB Atlas connection - update with your credentials
+      - MONGODB_URI=mongodb+srv://Vivek:VSweta%401234@vsproduct.bknr22r.mongodb.net/ats?retryWrites=true&w=majority
+      # OpenAI API Key - add your key here
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      # Email SMTP Configuration - update with your credentials
+      - SMTP_HOST=${SMTP_HOST:-smtp.gmail.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_FROM=${SMTP_FROM}
+      # Session Secret - change this to a random string
+      - SESSION_SECRET=${SESSION_SECRET:-change_this_secret_key}
+    volumes:
+      - ./uploads:/app/uploads
+    restart: unless-stopped
+    networks:
+      - ats-network
+
+networks:
+  ats-network:
+    driver: bridge

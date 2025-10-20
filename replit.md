@@ -2,6 +2,13 @@
 
 This is an AI-powered Applicant Tracking System (ATS) built as a full-stack web application. The system provides intelligent job matching, automated resume screening, and AI-generated assessments for recruiters and job candidates. It features role-based authentication, allowing recruiters to post jobs and manage applications while enabling candidates to upload resumes and take AI-generated tests.
 
+## Recent Updates (October 2025)
+
+- **Email Notifications**: System now sends email notifications to ALL candidates when new jobs are posted, including their match percentages
+- **Docker Support**: Fully containerized application with Docker and docker-compose configurations
+- **MongoDB Integration**: Added MongoDB Atlas support with complete storage implementation
+- **Production Ready**: Configured for deployment with environment variable support for all services
+
 # User Preferences
 
 Preferred communication style: Simple, everyday language.
@@ -24,9 +31,10 @@ Preferred communication style: Simple, everyday language.
 - **Session Storage**: PostgreSQL-backed session store with connect-pg-simple
 
 ## Data Storage Solutions
-- **Primary Database**: PostgreSQL with Neon serverless hosting
-- **ORM**: Drizzle ORM for type-safe database operations
-- **Schema Management**: Drizzle Kit for migrations and schema management
+- **Primary Database**: MongoDB Atlas (cloud-hosted) or PostgreSQL with Neon
+- **Database Driver**: Mongoose for MongoDB, Drizzle ORM for PostgreSQL
+- **Automatic Selection**: System auto-detects database based on MONGODB_URI environment variable
+- **Schema Management**: Mongoose schemas for MongoDB, Drizzle Kit for PostgreSQL
 - **In-Memory Storage**: Fallback memory store for development/testing
 
 ## Authentication and Authorization
@@ -74,6 +82,38 @@ Preferred communication style: Simple, everyday language.
 - **React Hook Form**: Form handling and validation
 
 ### Deployment and Hosting
+- **Docker**: Containerized deployment with Dockerfile and docker-compose.yml
 - **Replit**: Development and hosting platform
-- **Neon Database**: Serverless PostgreSQL hosting
+- **Database Options**: MongoDB Atlas (primary) or Neon PostgreSQL
 - **Environment Variables**: Configuration management for API keys and database URLs
+- **SMTP Email**: Production email support via Gmail, SendGrid, or custom SMTP
+
+## Deployment Options
+
+### Option 1: Docker Deployment (Recommended for Production)
+See `DOCKER_DEPLOYMENT.md` for complete instructions.
+
+Quick start:
+```bash
+# 1. Configure environment
+cp .env.example .env
+# Edit .env with your MongoDB Atlas URI and other credentials
+
+# 2. Build and run
+docker build -t ats-app .
+docker run -d -p 5000:5000 --env-file .env ats-app
+
+# Or use docker-compose for full stack
+docker-compose up -d
+```
+
+### Option 2: Replit Development
+The application runs in development mode on Replit using the configured workflow.
+
+### Environment Configuration
+
+Required environment variables:
+- `MONGODB_URI`: MongoDB Atlas connection string
+- `OPENAI_API_KEY`: OpenAI API key for AI features  
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`: Email configuration
+- `SESSION_SECRET`: Secret for session encryption
