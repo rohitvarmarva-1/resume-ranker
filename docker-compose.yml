@@ -14,7 +14,7 @@ services:
       - SMTP_USER=vivekananthan2624@gmail.com
       - SMTP_PASSWORD=your_gmail_app_password_here
       - SMTP_FROM=vivekananthan2624@gmail.com
-      - SESSION_SECRET=my-secret-key-12345
+      - SESSION_SECRET=your_secret_key_here
     volumes:
       - ./uploads:/app/uploads
     restart: unless-stopped
