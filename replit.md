@@ -4,10 +4,13 @@ This is an AI-powered Applicant Tracking System (ATS) built as a full-stack web 
 
 ## Recent Updates (October 2025)
 
-- **Email Notifications**: System now sends email notifications to ALL candidates when new jobs are posted, including their match percentages
-- **Docker Support**: Fully containerized application with Docker and docker-compose configurations
-- **MongoDB Integration**: Added MongoDB Atlas support with complete storage implementation
-- **Production Ready**: Configured for deployment with environment variable support for all services
+- **One-Command Docker Deployment**: Simplified deployment - just run `docker-compose up -d` with no setup required!
+- **Graceful Degradation**: App works without API keys - AI and email features auto-disable when credentials are missing
+- **Email Notifications**: System sends email notifications to ALL candidates when new jobs are posted, including match percentages
+- **Docker Support**: Fully containerized with safe defaults in `docker/default.env`
+- **MongoDB Integration**: MongoDB Atlas pre-configured with complete storage implementation
+- **Analytics Dashboard**: Fully functional analytics with application trends, match distribution, and hiring funnel
+- **Settings Management**: Complete settings page with notification preferences and account management
 
 # User Preferences
 
@@ -90,30 +93,47 @@ Preferred communication style: Simple, everyday language.
 
 ## Deployment Options
 
-### Option 1: Docker Deployment (Recommended for Production)
-See `DOCKER_DEPLOYMENT.md` for complete instructions.
+### Option 1: One-Command Docker Deployment (Easiest!)
 
-Quick start:
+**No configuration needed** - just run:
 ```bash
-# 1. Configure environment
-cp .env.example .env
-# Edit .env with your MongoDB Atlas URI and other credentials
-
-# 2. Build and run
-docker build -t ats-app .
-docker run -d -p 5000:5000 --env-file .env ats-app
-
-# Or use docker-compose for full stack
+git clone https://github.com/rohitvarmarva-1/resume-ranker.git
+cd resume-ranker
 docker-compose up -d
 ```
 
-### Option 2: Replit Development
+The app runs immediately on `http://localhost:5000` with:
+- ✅ MongoDB Atlas (pre-configured)
+- ⚠️  AI features disabled (add OPENAI_API_KEY to enable)
+- ⚠️  Email disabled (add SMTP credentials to enable)
+
+### Option 2: Full Features (Add AI + Email)
+
+Create `.env` file to enable all features:
+```bash
+# Enable AI features
+OPENAI_API_KEY=your_key_here
+
+# Enable email notifications
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_gmail_app_password
+```
+
+Then run: `docker-compose up -d`
+
+See `DOCKER_DEPLOYMENT.md` for detailed instructions.
+
+### Option 3: Replit Development
 The application runs in development mode on Replit using the configured workflow.
 
 ### Environment Configuration
 
-Required environment variables:
-- `MONGODB_URI`: MongoDB Atlas connection string
-- `OPENAI_API_KEY`: OpenAI API key for AI features  
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`: Email configuration
-- `SESSION_SECRET`: Secret for session encryption
+**Default values** (in `docker/default.env`):
+- `MONGODB_URI`: Pre-configured MongoDB Atlas connection
+- `SESSION_SECRET`: Auto-generated
+- `NODE_ENV`: production
+
+**Optional overrides** (create `.env` to customize):
+- `OPENAI_API_KEY`: OpenAI API key for AI features (optional)
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM`: Email config (optional)
+- Custom `MONGODB_URI` or `SESSION_SECRET` (optional)

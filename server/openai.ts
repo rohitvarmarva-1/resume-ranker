@@ -58,7 +58,7 @@ export async function calculateJobMatch(
     }
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openai!.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
@@ -108,7 +108,7 @@ export async function extractResumeSkills(resumeText: string): Promise<{
     }
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openai!.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
@@ -172,7 +172,7 @@ export async function generateTestQuestions(
     }
     `;
 
-    const response = await openai.chat.completions.create({
+    const response = await openai!.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
