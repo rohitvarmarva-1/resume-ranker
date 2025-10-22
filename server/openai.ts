@@ -19,7 +19,6 @@ export interface TestQuestion {
   type: "multiple_choice" | "code" | "essay";
   options?: string[];
   correctAnswer?: string;
-  codeExample?: string;
 }
 
 export async function calculateJobMatch(
@@ -135,18 +134,23 @@ export async function generateTestQuestions(
     Required Skills: ${requiredSkills.join(", ")}
     Experience Level: ${experienceLevel}
 
-    Create a mix of multiple choice, code examples, and essay questions. For multiple choice questions, provide 4 options with one correct answer.
+    Create a mix of multiple choice, coding challenge, and essay questions. 
+
+    IMPORTANT RULES:
+    - For multiple choice questions, provide 4 options with one correct answer
+    - For coding questions, describe the problem to solve but DO NOT include any code examples or solutions
+    - For essay questions, ask conceptual questions without providing answers
+    - NEVER include answers, code solutions, or hints in the question text itself
 
     Please provide a JSON response with the following structure:
     {
       "questions": [
         {
           "id": "unique_id",
-          "question": "question text",
+          "question": "question text (without any answers or solutions)",
           "type": "multiple_choice|code|essay",
           "options": ["option1", "option2", "option3", "option4"] (for multiple choice only),
-          "correctAnswer": "correct option" (for multiple choice only),
-          "codeExample": "code snippet if relevant" (optional)
+          "correctAnswer": "correct option" (for multiple choice only, stored separately for grading)
         }
       ]
     }

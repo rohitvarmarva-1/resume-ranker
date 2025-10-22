@@ -443,6 +443,343 @@ export default function RecruiterDashboard() {
             </div>
           )}
 
+          {/* Analytics View */}
+          {currentView === "analytics" && (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-foreground">Analytics</h1>
+                <p className="text-muted-foreground">Insights into your recruitment performance</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Application Trends */}
+                <Card data-testid="card-application-trends">
+                  <CardHeader>
+                    <CardTitle>Application Trends</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-blue-700 font-medium">This Week</p>
+                            <p className="text-2xl font-bold text-blue-900">
+                              {Array.isArray(applications) ? applications.filter((a: any) => {
+                                const weekAgo = new Date();
+                                weekAgo.setDate(weekAgo.getDate() - 7);
+                                return new Date(a.createdAt) >= weekAgo;
+                              }).length : 0}
+                            </p>
+                          </div>
+                          <i className="fas fa-calendar-week text-blue-600 text-2xl"></i>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-green-700 font-medium">This Month</p>
+                            <p className="text-2xl font-bold text-green-900">
+                              {Array.isArray(applications) ? applications.filter((a: any) => {
+                                const monthAgo = new Date();
+                                monthAgo.setDate(monthAgo.getDate() - 30);
+                                return new Date(a.createdAt) >= monthAgo;
+                              }).length : 0}
+                            </p>
+                          </div>
+                          <i className="fas fa-calendar-alt text-green-600 text-2xl"></i>
+                        </div>
+                      </div>
+                      <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-purple-700 font-medium">All Time</p>
+                            <p className="text-2xl font-bold text-purple-900">{Array.isArray(applications) ? applications.length : 0}</p>
+                          </div>
+                          <i className="fas fa-chart-line text-purple-600 text-2xl"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Match Score Distribution */}
+                <Card data-testid="card-match-distribution">
+                  <CardHeader>
+                    <CardTitle>AI Match Score Distribution</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
+                        <p className="text-sm text-green-700 mb-2">Excellent (80-100%)</p>
+                        <p className="text-3xl font-bold text-green-900">
+                          {Array.isArray(applications) ? applications.filter((a: any) => a.aiMatchScore >= 80).length : 0}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                        <p className="text-sm text-blue-700 mb-2">Good (60-79%)</p>
+                        <p className="text-3xl font-bold text-blue-900">
+                          {Array.isArray(applications) ? applications.filter((a: any) => a.aiMatchScore >= 60 && a.aiMatchScore < 80).length : 0}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-center">
+                        <p className="text-sm text-yellow-700 mb-2">Fair (40-59%)</p>
+                        <p className="text-3xl font-bold text-yellow-900">
+                          {Array.isArray(applications) ? applications.filter((a: any) => a.aiMatchScore >= 40 && a.aiMatchScore < 60).length : 0}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+                        <p className="text-sm text-red-700 mb-2">Low (0-39%)</p>
+                        <p className="text-3xl font-bold text-red-900">
+                          {Array.isArray(applications) ? applications.filter((a: any) => a.aiMatchScore < 40).length : 0}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Hiring Funnel */}
+                <Card data-testid="card-hiring-funnel">
+                  <CardHeader>
+                    <CardTitle>Hiring Funnel</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Applied</span>
+                          <span className="text-sm font-bold">
+                            {Array.isArray(applications) ? applications.filter((a: any) => a.status === "applied").length : 0}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Array.isArray(applications) ? (applications.filter((a: any) => a.status === "applied").length / Math.max(applications.length, 1)) * 100 : 0} 
+                          className="h-3"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Test Invited</span>
+                          <span className="text-sm font-bold">
+                            {Array.isArray(applications) ? applications.filter((a: any) => a.status === "test_invited").length : 0}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Array.isArray(applications) ? (applications.filter((a: any) => a.status === "test_invited").length / Math.max(applications.length, 1)) * 100 : 0} 
+                          className="h-3 bg-orange-200"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">In Review</span>
+                          <span className="text-sm font-bold">
+                            {Array.isArray(applications) ? applications.filter((a: any) => a.status === "in_review").length : 0}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Array.isArray(applications) ? (applications.filter((a: any) => a.status === "in_review").length / Math.max(applications.length, 1)) * 100 : 0} 
+                          className="h-3 bg-yellow-200"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Interviewing</span>
+                          <span className="text-sm font-bold">
+                            {Array.isArray(applications) ? applications.filter((a: any) => a.status === "interviewing").length : 0}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Array.isArray(applications) ? (applications.filter((a: any) => a.status === "interviewing").length / Math.max(applications.length, 1)) * 100 : 0} 
+                          className="h-3 bg-purple-200"
+                        />
+                      </div>
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium">Hired</span>
+                          <span className="text-sm font-bold">
+                            {Array.isArray(applications) ? applications.filter((a: any) => a.status === "hired").length : 0}
+                          </span>
+                        </div>
+                        <Progress 
+                          value={Array.isArray(applications) ? (applications.filter((a: any) => a.status === "hired").length / Math.max(applications.length, 1)) * 100 : 0} 
+                          className="h-3 bg-green-200"
+                        />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Job Performance */}
+                <Card data-testid="card-job-performance">
+                  <CardHeader>
+                    <CardTitle>Job Performance</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {Array.isArray(jobs) && jobs.slice(0, 5).map((job: any) => {
+                        const jobApplications = Array.isArray(applications) ? applications.filter((a: any) => a.jobId === job.id) : [];
+                        const avgMatchScore = jobApplications.length > 0
+                          ? Math.round(jobApplications.reduce((sum: number, a: any) => sum + (a.aiMatchScore || 0), 0) / jobApplications.length)
+                          : 0;
+                        
+                        return (
+                          <div key={job.id} className="p-4 bg-muted rounded-lg">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <p className="font-medium">{job.title}</p>
+                                <p className="text-sm text-muted-foreground">{job.location}</p>
+                              </div>
+                              <Badge variant={job.status === "open" ? "default" : "secondary"}>
+                                {job.status}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 mt-3">
+                              <div>
+                                <p className="text-xs text-muted-foreground">Applications</p>
+                                <p className="text-xl font-bold">{jobApplications.length}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">Avg. Match Score</p>
+                                <p className="text-xl font-bold">{avgMatchScore}%</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
+
+          {/* Settings View */}
+          {currentView === "settings" && (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+                <p className="text-muted-foreground">Manage your account and preferences</p>
+              </div>
+
+              <div className="space-y-6">
+                {/* Profile Settings */}
+                <Card data-testid="card-profile-settings">
+                  <CardHeader>
+                    <CardTitle>Profile Information</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Username</p>
+                      <p className="text-base">{user?.username}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Email</p>
+                      <p className="text-base">{user?.email}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Role</p>
+                      <Badge>Recruiter</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Email Notification Settings */}
+                <Card data-testid="card-email-settings">
+                  <CardHeader>
+                    <CardTitle>Email Notifications</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                      <div>
+                        <p className="font-medium">New Applications</p>
+                        <p className="text-sm text-muted-foreground">Get notified when candidates apply to your jobs</p>
+                      </div>
+                      <Badge variant="default" className="bg-green-600">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                      <div>
+                        <p className="font-medium">High Match Alerts</p>
+                        <p className="text-sm text-muted-foreground">Receive alerts for candidates with 85%+ match scores</p>
+                      </div>
+                      <Badge variant="default" className="bg-green-600">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                      <div>
+                        <p className="font-medium">Test Completions</p>
+                        <p className="text-sm text-muted-foreground">Know when candidates complete assessment tests</p>
+                      </div>
+                      <Badge variant="default" className="bg-green-600">Enabled</Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
+                      <div>
+                        <p className="font-medium">Weekly Summary</p>
+                        <p className="text-sm text-muted-foreground">Get a weekly digest of your recruitment activity</p>
+                      </div>
+                      <Badge variant="default" className="bg-green-600">Enabled</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* AI Settings */}
+                <Card data-testid="card-ai-settings">
+                  <CardHeader>
+                    <CardTitle>AI Matching Preferences</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="font-medium">Minimum Match Threshold</p>
+                        <span className="text-sm font-bold">70%</span>
+                      </div>
+                      <Progress value={70} className="h-2" />
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Only show candidates above this match score
+                      </p>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Auto-Generate Tests</p>
+                          <p className="text-sm text-muted-foreground">Automatically create AI tests for high-match candidates</p>
+                        </div>
+                        <Badge variant="default" className="bg-green-600">On</Badge>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-muted rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Smart Ranking</p>
+                          <p className="text-sm text-muted-foreground">AI ranks candidates based on multiple factors</p>
+                        </div>
+                        <Badge variant="default" className="bg-green-600">On</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Account Actions */}
+                <Card data-testid="card-account-actions">
+                  <CardHeader>
+                    <CardTitle>Account Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <Button variant="outline" className="w-full justify-start" data-testid="button-change-password">
+                      <i className="fas fa-key mr-2"></i>
+                      Change Password
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start" data-testid="button-export-data">
+                      <i className="fas fa-download mr-2"></i>
+                      Export My Data
+                    </Button>
+                    <Button variant="destructive" className="w-full justify-start" data-testid="button-delete-account">
+                      <i className="fas fa-trash mr-2"></i>
+                      Delete Account
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          )}
+
           {/* Candidate Details View */}
           {currentView === "candidate-details" && applicationDetails && (
             <div className="space-y-6">
