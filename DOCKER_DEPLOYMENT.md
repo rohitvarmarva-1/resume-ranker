@@ -2,70 +2,107 @@
 
 This guide explains how to deploy the ATS (Applicant Tracking System) using Docker.
 
+## 🚀 **EASIEST DEPLOYMENT** - Just One Command!
+
+The application includes default configuration for instant deployment. Simply run:
+
+```bash
+docker-compose up -d
+```
+
+That's it! The app will run on `http://localhost:5000` with:
+- ✅ MongoDB Atlas database (pre-configured)
+- ⚠️  AI features disabled (no OpenAI key)
+- ⚠️  Email notifications disabled (no SMTP credentials)
+
+**To enable ALL features**, add your API keys (see "Optional: Enable AI & Email" below).
+
+---
+
 ## Prerequisites
 
 - Docker installed on your system
 - Docker Compose installed
-- MongoDB Atlas account (or use local MongoDB via Docker Compose)
-- OpenAI API key
-- Email SMTP credentials (Gmail, SendGrid, or other)
 
-## Quick Start with MongoDB Atlas
+**Optional** (for full functionality):
+- OpenAI API key (for AI matching & test generation)
+- Email SMTP credentials (for notifications)
 
-### 1. Clone and Setup Environment Variables
+## Quick Start
+
+### Option 1: Basic Deployment (No Setup Required)
+
+```bash
+# Clone the repository
+git clone https://github.com/rohitvarmarva-1/resume-ranker.git
+cd resume-ranker
+
+# Start the application
+docker-compose up -d
+```
+
+**Access:** `http://localhost:5000`
+
+### Option 2: Full Features (AI + Email)
 
 Create a `.env` file in the project root:
 
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and configure:
-
 ```env
-# MongoDB Atlas Connection
-MONGODB_URI=mongodb+srv://Vivek:VSweta%401234@vsproduct.bknr22r.mongodb.net/ats?retryWrites=true&w=majority
-
-# OpenAI API Key
+# OpenAI API Key (REQUIRED for AI features)
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Email Configuration (Gmail Example)
+# Email Configuration (REQUIRED for notifications)
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_gmail_app_password
+```
+
+Then run:
+```bash
+docker-compose up -d
+```
+
+**✅ What Gets Enabled:**
+- 🤖 AI-powered resume matching
+- 📝 Auto-generated test questions
+- 📧 Email notifications to candidates and recruiters
+
+---
+
+## Configuration Details
+
+### Default Configuration (docker/default.env)
+
+The application ships with safe defaults:
+- **Database:** MongoDB Atlas (already configured)
+- **Session Secret:** Auto-generated
+- **OpenAI:** Disabled (add key to enable)
+- **Email:** Disabled (add SMTP to enable)
+
+### Custom Configuration (.env)
+
+Create `.env` in the root directory to override defaults:
+
+```env
+# Optional: Use your own MongoDB
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/ats
+
+# Optional: Enable AI Features
+OPENAI_API_KEY=sk-...
+
+# Optional: Enable Email Notifications
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your_email@gmail.com
-SMTP_PASSWORD=your_app_specific_password
+SMTP_PASSWORD=your_app_password
 SMTP_FROM=your_email@gmail.com
 
-# Session Secret
-SESSION_SECRET=your_random_secret_key_here
-
-# Environment
-NODE_ENV=production
+# Optional: Custom Session Secret
+SESSION_SECRET=your_random_secret_here
 ```
 
-### 2. Build and Run
+### Access the Application
 
-Using the application container only (with MongoDB Atlas):
-
-```bash
-# Build the Docker image
-docker build -t ats-app .
-
-# Run the container
-docker run -d \
-  -p 5000:5000 \
-  --env-file .env \
-  -v $(pwd)/uploads:/app/uploads \
-  --name ats-application \
-  ats-app
-```
-
-### 3. Access the Application
-
-Open your browser and navigate to:
-```
-http://localhost:5000
-```
+Open your browser: `http://localhost:5000`
 
 ## Full Stack Deployment with Local MongoDB
 
