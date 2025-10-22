@@ -1,9 +1,19 @@
 import OpenAI from "openai";
 
+// Check if OpenAI API key is available
+const OPENAI_AVAILABLE = !!(process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY.trim());
+
 // the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
-});
+const openai = OPENAI_AVAILABLE ? new OpenAI({ 
+  apiKey: process.env.OPENAI_API_KEY
+}) : null;
+
+// Helper function to check if AI features are available
+function ensureAIAvailable() {
+  if (!OPENAI_AVAILABLE || !openai) {
+    throw new Error("AI features are not available. Please configure OPENAI_API_KEY in your environment variables.");
+  }
+}
 
 export interface JobMatchResult {
   matchScore: number;
@@ -26,6 +36,8 @@ export async function calculateJobMatch(
   jobRequirements: string,
   requiredSkills: string[]
 ): Promise<JobMatchResult> {
+  ensureAIAvailable();
+  
   try {
     const prompt = `
     Analyze the compatibility between this resume and job requirements. Provide a detailed analysis in JSON format.
@@ -80,6 +92,8 @@ export async function extractResumeSkills(resumeText: string): Promise<{
   experienceYears: number;
   summary: string;
 }> {
+  ensureAIAvailable();
+  
   try {
     const prompt = `
     Extract key information from this resume text. Provide a JSON response with skills, experience years, and a brief summary.
@@ -127,6 +141,8 @@ export async function generateTestQuestions(
   experienceLevel: string,
   questionCount: number = 10
 ): Promise<TestQuestion[]> {
+  ensureAIAvailable();
+  
   try {
     const prompt = `
     Generate ${questionCount} technical assessment questions for a ${jobTitle} position requiring ${experienceLevel} level experience.

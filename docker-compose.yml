@@ -5,6 +5,9 @@ services:
     build: .
     ports:
       - "5000:5000"
+    env_file:
+      - docker/default.env
+      - .env
     environment:
       - NODE_ENV=production
       - MONGODB_URI=${MONGODB_URI}
