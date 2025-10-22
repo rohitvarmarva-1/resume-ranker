@@ -1,0 +1,60 @@
+PS C:\Users\rohit> Remove-Item -Recurse -Force resume-ranker
+PS C:\Users\rohit> git clone https://github.com/rohitvarmarva-1/resume-ranker.git
+Cloning into 'resume-ranker'...
+remote: Enumerating objects: 253, done.
+remote: Counting objects: 100% (253/253), done.
+remote: Compressing objects: 100% (134/134), done.
+remote: Total 253 (delta 119), reused 250 (delta 116), pack-reused 0 (from 0)
+Receiving objects: 100% (253/253), 2.21 MiB | 3.43 MiB/s, done.
+Resolving deltas: 100% (119/119), done.
+PS C:\Users\rohit> cd resume-ranker
+PS C:\Users\rohit\resume-ranker> docker-compose up -d
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"MONGODB_URI\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"OPENAI_API_KEY\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SMTP_HOST\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SMTP_PORT\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SMTP_USER\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SMTP_PASSWORD\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SMTP_FROM\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="The \"SESSION_SECRET\" variable is not set. Defaulting to a blank string."
+time="2025-10-22T23:04:29+05:30" level=warning msg="C:\\Users\\rohit\\resume-ranker\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+[+] Running 9/9
+ ✔ mongo Pulled                                                                                                                50.5s
+   ✔ 0f1c32d68638 Pull complete                                                                                                11.5s
+   ✔ f8a6564ff91f Pull complete                                                                                                44.6s
+   ✔ 02613098a4eb Pull complete                                                                                                 1.5s
+   ✔ 907d967ea28b Pull complete                                                                                                43.9s
+   ✔ 9d9d86f60485 Pull complete                                                                                                 1.6s
+   ✔ d91d51de2f11 Pull complete                                                                                                 2.1s
+   ✔ 4e898e1375f7 Pull complete                                                                                                 1.5s
+   ✔ af6eca94c810 Pull complete                                                                                                11.2s
+[+] Building 5.8s (3/3) FINISHED
+ => [internal] load local bake definitions                                                                                      0.0s
+ => => reading from stdin 516B                                                                                                  0.0s
+ => [internal] load build definition from Dockerfile                                                                            0.1s
+ => => transferring dockerfile: 446B                                                                                            0.1s
+ => ERROR [internal] load metadata for docker.io/library/node:20-alpine                                                         4.6s
+------
+ > [internal] load metadata for docker.io/library/node:20-alpine:
+------
+Dockerfile:2
+
+--------------------
+
+   1 |     # Use Node.js LTS version
+
+   2 | >>> FROM node:20-alpine
+
+   3 |
+
+   4 |     # Set working directory
+
+--------------------
+
+failed to solve: node:20-alpine: failed to resolve source metadata for docker.io/library/node:20-alpine: failed to copy: httpReadSeeker: failed open: failed to do request: Get "https://docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com/registry-v2/docker/registry/v2/blobs/sha256/2b/2b56f2779663b9e1a77bdb5235dc31f1a81e534ccab1c1b35c716a8db79eeab9/data?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=f1baa2dd9b876aeb89efebbfc9e5d5f4%2F20251022%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20251022T173526Z&X-Amz-Expires=1200&X-Amz-SignedHeaders=host&X-Amz-Signature=035f0ea86e4ca9d0eda3779d157e9fe5300eece6d472aa3b25d2b78897977f22": dialing docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com:443 container via direct connection because static system has no HTTPS proxy: connecting to docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com:443: dial tcp: lookup docker-images-prod.6aa30f8b08e16409b46e0173d6de2f56.r2.cloudflarestorage.com: no such host
+
+
+
+View build details: docker-desktop://dashboard/build/default/default/qbj3ihd0k9oscufq3529f7pop
+
+PS C:\Users\rohit\resume-ranker>
