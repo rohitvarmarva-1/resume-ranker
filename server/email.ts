@@ -175,8 +175,24 @@ class EmailService {
     if (this.initialized) return;
 
     try {
-      // For development, use Ethereal email (test email service)
-      if (process.env.NODE_ENV !== "production") {
+      // Check if SMTP credentials are provided
+      const hasSmtpCredentials = process.env.SMTP_USER && process.env.SMTP_PASSWORD;
+      
+      if (hasSmtpCredentials) {
+        // Use production SMTP configuration with provided credentials
+        this.transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST || "smtp.gmail.com",
+          port: parseInt(process.env.SMTP_PORT || "587"),
+          secure: false,
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD,
+          },
+        });
+        
+        console.log("📧 Email service initialized with SMTP:", process.env.SMTP_USER);
+      } else if (process.env.NODE_ENV !== "production") {
+        // For development without credentials, use Ethereal email (test email service)
         const testAccount = await nodemailer.createTestAccount();
         
         this.transporter = nodemailer.createTransport({
@@ -192,18 +208,10 @@ class EmailService {
         console.log("📧 Email service initialized with Ethereal (development mode)");
         console.log(`📧 Preview URLs will be logged to console`);
       } else {
-        // Production SMTP configuration
-        this.transporter = nodemailer.createTransport({
-          host: process.env.SMTP_HOST || "smtp.gmail.com",
-          port: parseInt(process.env.SMTP_PORT || "587"),
-          secure: false,
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
-          },
-        });
-        
-        console.log("📧 Email service initialized with production SMTP");
+        // Production mode but no credentials - log warning and continue
+        console.warn("⚠️  SMTP credentials not configured. Email notifications will be disabled.");
+        console.warn("⚠️  Set SMTP_USER and SMTP_PASSWORD environment variables to enable emails.");
+        this.transporter = null;
       }
       
       this.initialized = true;
