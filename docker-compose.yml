@@ -5,19 +5,16 @@ services:
     build: .
     ports:
       - "5000:5000"
-    env_file:
-      - docker/default.env
-      - .env
     environment:
       - NODE_ENV=production
-      - MONGODB_URI=${MONGODB_URI}
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
-      - SMTP_FROM=${SMTP_FROM}
-      - SESSION_SECRET=${SESSION_SECRET}
+      - MONGODB_URI=mongodb+srv://Vivek:VSweta%401234@vsproduct.bknr22r.mongodb.net/ats
+      - OPENAI_API_KEY=your_openai_key_here
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=vivekananthan2624@gmail.com
+      - SMTP_PASSWORD=your_gmail_app_password_here
+      - SMTP_FROM=vivekananthan2624@gmail.com
+      - SESSION_SECRET=my-secret-key-12345
     volumes:
       - ./uploads:/app/uploads
     restart: unless-stopped
